@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventopia - Payment Gateway</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .payment-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .payment-method:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.02);
+        }
+
+        .payment-method img {
+            width: 50px;
+            margin-right: 20px;
+        }
+
+        .payment-summary {
+            text-align: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: bold;
+        }
+
+        .modal-body {
+            background-color: #f8f9fa;
+        }
+
+        .payment-detail {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="payment-container">
+        <div class="payment-header">
+            <h2>Select Payment Method</h2>
+            <p>Choose one of the available options below to complete your booking.</p>
+        </div>
+
+        <!-- User Details -->
+        <form id="userDetailsForm">
+            <div class="mb-3">
+                <label for="userName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="userName" required placeholder="John Doe">
+            </div>
+            <div class="mb-3">
+                <label for="userEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="userEmail" required placeholder="example@domain.com">
+            </div>
+            <div class="mb-3">
+                <label for="userPhone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="userPhone" required placeholder="1234567890">
+            </div>
+        </form>
+
+        <!-- UPI Payment Methods -->
+        <div class="payment-method" data-bs-toggle="modal" data-bs-target="#upiModal" onclick="setPaymentMethod('PhonePe')">
+            <img src="phone pe.png" alt="PhonePe">
+            <span>Pay with PhonePe</span>
+            <div class="payment-detail">Quick and secure payments via UPI.</div>
+        </div>
+
+        <div class="payment-method" data-bs-toggle="modal" data-bs-target="#upiModal" onclick="setPaymentMethod('Google Pay')">
+            <img src="gpay.jpeg" alt="Google Pay">
+            <span>Pay with Google Pay</span>
+            <div class="payment-detail">Instant payments with your Google account.</div>
+        </div>
+
+        <div class="payment-method" data-bs-toggle="modal" data-bs-target="#upiModal" onclick="setPaymentMethod('Paytm')">
+            <img src="paytm.png" alt="Paytm">
+            <span>Pay with Paytm</span>
+            <div class="payment-detail">Fast payments using your Paytm wallet.</div>
+        </div>
+
+        <div class="payment-method" data-bs-toggle="modal" data-bs-target="#upiModal" onclick="setPaymentMethod('BHIM UPI')">
+            <img src="bhim.jpeg" alt="BHIM">
+            <span>Pay with BHIM UPI</span>
+            <div class="payment-detail">Secure payments using the BHIM app.</div>
+        </div>
+
+        <hr>
+
+        <!-- Card Payment Methods -->
+        <div class="payment-method" data-bs-toggle="modal" data-bs-target="#cardModal" onclick="setPaymentMethod('Visa')">
+            <img src="visa.jpg" alt="Visa">
+            <span>Pay with Visa</span>
+            <div class="payment-detail">Worldwide accepted credit card payments.</div>
+        </div>
+
+        <div class="payment-method" data-bs-toggle="modal" data-bs-target="#cardModal" onclick="setPaymentMethod('MasterCard')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/640px-Mastercard_2019_logo.svg.png" alt="MasterCard">
+            <span>Pay with MasterCard</span>
+            <div class="payment-detail">Easy payments with MasterCard globally.</div>
+        </div>
+
+        <div class="payment-method" data-bs-toggle="modal" data-bs-target="#cardModal" onclick="setPaymentMethod('RuPay')">
+            <img src="rupay.jpeg" alt="RuPay">
+            <span>Pay with RuPay</span>
+            <div class="payment-detail">Popular Indian domestic card payment option.</div>
+        </div>
+
+        <div class="payment-method" data-bs-toggle="modal" data-bs-target="#paypalModal" onclick="setPaymentMethod('PayPal')">
+            <img src="paypal.jpeg" alt="PayPal">
+            <span>Pay with PayPal</span>
+            <div class="payment-detail">Secure online payments with PayPal.</div>
+        </div>
+
+        <hr>
+
+        <!-- Payment Summary and Confirm Button -->
+        
+    </div>
+
+    <!-- UPI Modal -->
+    <div class="modal fade" id="upiModal" tabindex="-1" aria-labelledby="upiModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="upiModalLabel">UPI Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="upiForm" onsubmit="processPayment(event)">
+                        <div class="mb-3">
+                            <label for="upiID" class="form-label">Enter your UPI ID</label>
+                            <input type="text" class="form-control" id="upiID" placeholder="example@upi" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirm Payment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Modal -->
+    <div class="modal fade" id="cardModal" tabindex="-1" aria-labelledby="cardModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cardModalLabel">Card Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cardForm" onsubmit="processPayment(event)">
+                        <div class="mb-3">
+                            <label for="cardNumber" class="form-label">Card Number</label>
+                            <input type="text" class="form-control" id="cardNumber" placeholder="XXXX-XXXX-XXXX-XXXX" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardExpiry" class="form-label">Expiry Date</label>
+                            <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardCVC" class="form-label">CVC</label>
+                            <input type="text" class="form-control" id="cardCVC" placeholder="CVC" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirm Payment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PayPal Modal -->
+    <div class="modal fade" id="paypalModal" tabindex="-1" aria-labelledby="paypalModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paypalModalLabel">PayPal Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="paypalForm" onsubmit="processPayment(event)">
+                        <div class="mb-3">
+                            <label for="paypalEmail" class="form-label">PayPal Email</label>
+                            <input type="email" class="form-control" id="paypalEmail" placeholder="your-email@paypal.com" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirm Payment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedPaymentMethod = '';
+
+        function setPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            console.log("Selected payment method:", method);
+        }
+
+        function processPayment(event) {
+            event.preventDefault(); // Prevent form submission
+            const paymentMethod = selectedPaymentMethod;
+
+            if (paymentMethod) {
+                const userName = document.getElementById('userName').value;
+                const userEmail = document.getElementById('userEmail').value;
+                const userPhone = document.getElementById('userPhone').value;
+
+                // Collect payment details based on selected method
+                const paymentDetail = paymentMethod === 'PhonePe' || paymentMethod === 'Google Pay' ||
+                    paymentMethod === 'Paytm' || paymentMethod === 'BHIM UPI' ?
+                    document.getElementById('upiID').value : 
+                    document.getElementById('cardNumber').value || 
+                    document.getElementById('paypalEmail').value;
+
+                // Simulate payment processing (this is where you'd integrate with actual payment API)
+                console.log("Processing payment for:", {
+                    userName,
+                    userEmail,
+                    userPhone,
+                    paymentMethod,
+                    paymentDetail
+                });
+
+                // Redirect to thank you page after payment processing
+                window.location.href = "thankyou.html";
+            } else {
+                console.log("No payment method selected.");
+            }
+        }
+    </script>
+</body>
+
+</html>
